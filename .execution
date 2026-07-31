@@ -1,0 +1,146 @@
+# Execution Commands for Legacy System Health Monitor
+
+## Backend Setup and Execution
+
+### 1. Install Dependencies
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 2. Configure Environment
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+### 3. Bootstrap Database
+```bash
+python scripts/bootstrap_database.py
+```
+
+### 4. Generate Synthetic Data
+```bash
+python scripts/generate_synthetic_data.py
+```
+
+### 5. Run Migrations (if needed)
+```bash
+alembic upgrade head
+```
+
+### 6. Start Backend Server (Development)
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 7. Start Backend Server (Production)
+```bash
+gunicorn -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:8000 app.main:app
+```
+
+## Frontend Setup and Execution
+
+### 1. Install Dependencies
+```bash
+cd frontend
+npm install
+```
+
+### 2. Configure Environment
+```bash
+cp .env.example .env
+# Edit .env with your API URL
+```
+
+### 3. Start Development Server
+```bash
+npm run dev
+```
+
+### 4. Build for Production
+```bash
+npm run build
+```
+
+### 5. Preview Production Build
+```bash
+npm run preview
+```
+
+## Complete Setup Sequence
+
+1. **Backend Setup**
+   - Install Python dependencies
+   - Configure environment variables
+   - Bootstrap database
+   - Generate synthetic data
+   - Start backend server
+
+2. **Frontend Setup**
+   - Install Node.js dependencies
+   - Configure environment variables
+   - Start frontend development server
+
+3. **Access Application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000
+   - API Documentation: http://localhost:8000/docs
+
+## Testing API Endpoints
+
+### Health Check
+```bash
+curl http://localhost:8000/api/health
+```
+
+### Get Logs
+```bash
+curl http://localhost:8000/api/logs?limit=10
+```
+
+### Get Metrics
+```bash
+curl http://localhost:8000/api/metrics?limit=10
+```
+
+### Detect Anomalies
+```bash
+curl -X POST "http://localhost:8000/api/anomalies/detect?source_system=legacy-crm&hours=24"
+```
+
+### Get Health Scores
+```bash
+curl http://localhost:8000/api/health-scores
+```
+
+### Generate System Summary
+```bash
+curl "http://localhost:8000/api/summaries/system?source_system=legacy-crm&hours=24"
+```
+
+## Troubleshooting
+
+### Database Connection Issues
+- Ensure PostgreSQL is running
+- Check DATABASE_URL in .env
+- Verify database exists
+
+### LLM API Issues
+- Check GOOGLE_ADK_API_KEY in .env
+- Verify API credentials are valid
+- Check network connectivity
+
+### Frontend Build Issues
+- Clear node_modules: `rm -rf node_modules && npm install`
+- Check Node.js version (should be 18+)
+- Verify environment variables
+
+## Notes
+
+- The TypeScript errors in the frontend are expected until dependencies are installed with `npm install`
+- Google ADK integration requires valid API credentials
+- LangTrace and Langfuse integration requires valid API keys
+- Synthetic data generation creates realistic test data for development/demo purposes
